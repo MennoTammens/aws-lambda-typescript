@@ -148,7 +148,7 @@
       "Action": [
           "acm:ListCertificates"
       ],
-      "Resource": "arn:aws:acm:<region>:<account_no>:certificate/*"
+      "Resource": "*"
     },
     {
         "Effect": "Allow",
@@ -160,9 +160,11 @@
     {
       "Effect": "Allow",
       "Action": [
-          "route53:ChangeResourceRecordSets"
+          "route53:ChangeResourceRecordSets",
+          "route53:GetHostedZone",
+          "route53:ListResourceRecordSets"
       ],
-      "Resource": "arn:aws:route53:::hostedzone/<hosted_zone_ID>/rrset"
+      "Resource": "arn:aws:route53:::hostedzone/<hosted_zone_ID>"
     },
     {
       "Effect": "Allow",
@@ -170,6 +172,37 @@
           "cloudfront:UpdateDistribution"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:DELETE"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:<region>::/domainnames/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PATCH"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:<region>::/domainnames/*/basepathmappings",
+        "arn:aws:apigateway:<region>::/domainnames/*/basepathmappings/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:POST"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:<region>::/domainnames"
+      ]
     }
   ]
 }
