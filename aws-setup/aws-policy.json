@@ -203,6 +203,13 @@
       "Resource": [
         "arn:aws:apigateway:<region>::/domainnames"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateServiceLinkedRole"
+      ],
+      "Resource": "arn:aws:iam::<account_no>:role/aws-service-role/ops.apigateway.amazonaws.com/AWSServiceRoleForAPIGateway"
     }
   ]
 }
