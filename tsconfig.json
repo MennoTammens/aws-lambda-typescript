@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
-    "lib": [ 
-      "es6"
+    "target": "es2018",
+    "lib": [
+      "es2018"
     ],
     "moduleResolution": "node",
     "rootDir": "./",
@@ -19,7 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true
   },
-  "exclude": [ 
+  "exclude": [
     "node_modules",
     "coverage"
    ]

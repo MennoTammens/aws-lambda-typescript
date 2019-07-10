@@ -5,45 +5,36 @@ type SuccessCaller = <T> (handler: ApiHandler, pathParameters?: PathParameter) =
 type FailureCaller = (handler: ApiHandler, pathParameters?: PathParameter) => Promise<ApiErrorResponseParsed>;
 
 // tslint:disable-next-line arrow-return-shorthand (Long function body.)
-export const callSuccess: SuccessCaller = <T>(handler: ApiHandler, pathParameters?: PathParameter): Promise<ApiResponseParsed<T>> => {
-  // tslint:disable-next-line typedef (Well-known constructor.)
-  return new Promise((resolve, reject) => {
+export const callSuccess: SuccessCaller = async <T>(handler: ApiHandler, pathParameters?: PathParameter): Promise<ApiResponseParsed<T>> => {
     const event: ApiEvent = <ApiEvent> {};
     if (pathParameters) {
       event.pathParameters = pathParameters;
     }
 
-    handler(event, <ApiContext> {}, (error?: Error | null | string, result?: ApiResponse): void => {
-      if (typeof result === 'undefined') {
-        reject('No result was returned by the handler!');
-        return;
-      }
+    const result: ApiResponse = await handler(event, <ApiContext> {});
+    if (typeof result === 'undefined') {
+      throw new Error('No result was returned by the handler!');
+    }
 
-      const parsedResult: ApiResponseParsed<T> = result as ApiResponseParsed<T>;
-      parsedResult.parsedBody = JSON.parse(result.body) as T;
-      resolve(parsedResult);
-    });
-  });
+    const parsedResult: ApiResponseParsed<T> = result as ApiResponseParsed<T>;
+    parsedResult.parsedBody = JSON.parse(result.body) as T;
+    return parsedResult;
 };
 
 // tslint:disable-next-line arrow-return-shorthand (Long function body.)
-export const callFailure: FailureCaller = (handler: ApiHandler, pathParameters?: PathParameter): Promise<ApiErrorResponseParsed> => {
+export const callFailure: FailureCaller = async (handler: ApiHandler, pathParameters?: PathParameter): Promise<ApiErrorResponseParsed> => {
   // tslint:disable-next-line typedef (Well-known constructor.)
-  return new Promise((resolve, reject) => {
-    const event: ApiEvent = <ApiEvent> {};
-    if (pathParameters) {
-      event.pathParameters = pathParameters;
-    }
+  const event: ApiEvent = <ApiEvent> {};
+  if (pathParameters) {
+    event.pathParameters = pathParameters;
+  }
 
-    handler(event, <ApiContext> {}, (error?: Error | null | string, result?: ApiResponse): void => {
-      if (typeof result === 'undefined') {
-        reject('No result was returned by the handler!');
-        return;
-      }
+  const result: ApiResponse = await handler(event, <ApiContext> {});
+  if (typeof result === 'undefined') {
+    throw new Error('No result was returned by the handler!');
+  }
 
-      const parsedResult: ApiErrorResponseParsed = result as ApiErrorResponseParsed;
-      parsedResult.parsedBody = JSON.parse(result.body) as ErrorResponseBody;
-      resolve(parsedResult);
-    });
-  });
+  const parsedResult: ApiErrorResponseParsed = result as ApiErrorResponseParsed;
+  parsedResult.parsedBody = JSON.parse(result.body) as ErrorResponseBody;
+  return parsedResult;
 };

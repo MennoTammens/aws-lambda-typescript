@@ -56,29 +56,24 @@ describe('HealthController', () => {
     });
 
     // tslint:disable-next-line arrow-return-shorthand (Long function body.)
-    function callSuccessDetailed(handler: ApiHandler, requestId?: string): Promise<ApiResponseParsed<GetHealthCheckDetailedResult>> {
-      // tslint:disable-next-line typedef (Well-known constructor.)
-      return new Promise((resolve, reject) => {
-        let event: ApiEvent = <ApiEvent> {};
-        if (requestId) {
-          event = <ApiEvent> {
-            requestContext: {
-              requestId
-            }
-          };
-        }
-
-        handler(event, <ApiContext> {}, (error?: Error | null | string, result?: ApiResponse): void => {
-          if (typeof result === 'undefined') {
-            reject('No result was returned by the handler!');
-            return;
+    async function callSuccessDetailed(handler: ApiHandler, requestId?: string): Promise<ApiResponseParsed<GetHealthCheckDetailedResult>> {
+      let event: ApiEvent = <ApiEvent> {};
+      if (requestId) {
+        event = <ApiEvent> {
+          requestContext: {
+            requestId
           }
+        };
+      }
 
-          const parsedResult: ApiResponseParsed<GetHealthCheckDetailedResult> = result as ApiResponseParsed<GetHealthCheckDetailedResult>;
-          parsedResult.parsedBody = JSON.parse(result.body) as GetHealthCheckDetailedResult;
-          resolve(parsedResult);
-        });
-      });
+      const result: ApiResponse = await handler(event, <ApiContext> {});
+      if (typeof result === 'undefined') {
+        throw new Error('No result was returned by the handler!');
+      }
+
+      const parsedResult: ApiResponseParsed<GetHealthCheckDetailedResult> = result as ApiResponseParsed<GetHealthCheckDetailedResult>;
+      parsedResult.parsedBody = JSON.parse(result.body) as GetHealthCheckDetailedResult;
+      return parsedResult;
     }
   });
 });

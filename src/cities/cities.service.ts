@@ -6,25 +6,21 @@ export class CitiesService {
   public constructor(private readonly _repo: CitiesRepository, private readonly _env: NodeJS.ProcessEnv) {
   }
 
-  public getCity(id: number): Promise<GetCityResult> {
-    return new Promise((resolve: (result: GetCityResult) => void, reject: (reason: NotFoundResult) => void): void => {
-      if (!this._repo.exists(id)) {
-          reject(new NotFoundResult('UNKNOWN_CITY', 'There is no city with the specified ID!'));
-          return;
-      }
+  public async getCity(id: number): Promise<GetCityResult> {
+    if (!this._repo.exists(id)) {
+      throw new NotFoundResult('UNKNOWN_CITY', 'There is no city with the specified ID!');
+    }
 
-      if (!this._repo.hasAccess(id)) {
-        reject(new ForbiddenResult('PERMISSION_REQUIRED', 'You have no permission to access the city with the specified ID!'));
-        return;
-      }
+    if (!this._repo.hasAccess(id)) {
+      throw new ForbiddenResult('PERMISSION_REQUIRED', 'You have no permission to access the city with the specified ID!');
+    }
 
-      const defaultCountry: string = this._env.DEFAULT_COUNTRY || 'Hungary';
-      const city: City = this._repo.getCity(id, defaultCountry);
-      const result: GetCityResult = {
-        city
-      };
+    const defaultCountry: string = this._env.DEFAULT_COUNTRY || 'Hungary';
+    const city: City = this._repo.getCity(id, defaultCountry);
+    const result: GetCityResult = {
+      city
+    };
 
-      resolve(result);
-    });
+    return result;
   }
 }
